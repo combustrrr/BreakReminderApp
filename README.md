@@ -50,11 +50,28 @@ The original desktop version using Tkinter GUI.
 ```bash
 # Run the desktop app
 python BreakReminderApp.py
+# or use: python launcher.py --desktop
 ```
 
 **Note:** The desktop version uses `winsound` which only works on Windows. For cross-platform support, use the web version.
 
-## 🚀 Quick Start (Web Version)
+## 🚀 Quick Start
+
+### Easy Launch (Recommended)
+
+Use the launcher script that auto-detects the best version for your system:
+
+```bash
+# Install dependencies first
+pip install -r requirements.txt
+
+# Run the launcher
+python launcher.py
+```
+
+The launcher will automatically start the web version if Flask is available, or fall back to the desktop version.
+
+### Manual Start (Web Version)
 
 1. Install Python 3.7 or higher
 2. Clone this repository
@@ -65,6 +82,7 @@ python BreakReminderApp.py
 4. Run the web app:
    ```bash
    python web_app.py
+   # or use: python launcher.py --web
    ```
 5. Open your browser and go to http://localhost:5000
 6. Set your desired interval (in minutes)
