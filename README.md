@@ -1,9 +1,21 @@
-# Break Reminder App
+# Break Reminder App - Combat Computer Vision Syndrome
 
-A periodic break reminder application that helps you follow the 20-20-20 rule for eye health: Every 20 minutes, look at something 20 feet away for 20 seconds.
+A periodic break reminder application that helps you combat Computer Vision Syndrome (CVS) and reduce eye strain by following the 20-20-20 rule: Every 20 minutes, look at something 20 feet away for 20 seconds.
+
+## 👁️ What is Computer Vision Syndrome?
+
+Computer Vision Syndrome (CVS) is a group of eye and vision-related problems that result from prolonged computer, tablet, and phone use. Symptoms include:
+- Eye strain and fatigue
+- Dry eyes
+- Blurred vision
+- Headaches
+- Neck and shoulder pain
+
+This app helps you combat CVS by reminding you to take regular breaks and rest your eyes.
 
 ## 🌟 Features
 
+- **Flexible Timer** - Set your own reminder interval (not forced, you control it!)
 - Customizable reminder intervals
 - Start, Stop, Pause, and Resume functionality
 - Visual and audio notifications
@@ -38,8 +50,20 @@ The app will be available at:
 - ✅ Cross-platform audio notifications
 - ✅ Modern, intuitive interface
 - ✅ No installation required (just need Python)
+- ✅ Can be added to home screen (PWA)
 
-### 2. Desktop Version (Windows/Linux/Mac)
+### 2. Standalone Applications
+
+Want to distribute the app as a standalone application? Check out our **[DEPLOYMENT.md](DEPLOYMENT.md)** guide for:
+
+- 📱 **Android APK** - Build installable APK for mobile and tablets
+- 💻 **Windows EXE** - Create standalone executable for Windows
+- 🍎 **macOS APP** - Package as macOS application
+- 🐧 **Linux AppImage** - Portable Linux application
+
+All versions are safe to distribute and don't require Play Store or app stores!
+
+### 3. Desktop Version (Windows/Linux/Mac)
 
 **Works on: Desktop computers with Python and Tkinter**
 
