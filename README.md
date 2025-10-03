@@ -171,6 +171,24 @@ This helps reduce eye strain from prolonged screen time.
 
 This project is open source and available for personal and educational use.
 
+## 🗺️ Roadmap & Future Features
+
+We're constantly evolving! Check out our plans:
+- **[ROADMAP.md](ROADMAP.md)** - Long-term vision, research-inspired features, and advanced capabilities
+- **[TODO.md](TODO.md)** - Current development tasks and priorities
+
+Upcoming features include:
+- 📊 Statistics dashboard with usage analytics
+- 🎯 Eye strain risk score prediction
+- 🧘 Guided eye exercises during breaks
+- 🎨 Radial/circular timer design
+- 🌓 Light/dark theme toggle
+- 🤖 ML-based adaptive interval optimization
+- 📸 Eye tracking and blink detection
+- And much more!
+
+Want to contribute? Check the TODO.md for tasks you can help with!
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
