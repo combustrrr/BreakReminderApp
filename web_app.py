@@ -1,10 +1,12 @@
 from flask import Flask, render_template, jsonify, request
 import json
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
 SETTINGS_FILE = "settings.json"
+SYMPTOMS_FILE = "symptom_logs.json"
 DEFAULT_INTERVAL = 20
 
 
@@ -23,6 +25,23 @@ def save_settings(settings):
         json.dump(settings, f)
 
 
+def load_symptom_logs():
+    """Load symptom logs from JSON file."""
+    try:
+        with open(SYMPTOMS_FILE, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+
+def save_symptom_log(log_entry):
+    """Save a symptom log entry."""
+    logs = load_symptom_logs()
+    logs.append(log_entry)
+    with open(SYMPTOMS_FILE, "w") as f:
+        json.dump(logs, f, indent=2)
+
+
 @app.route('/')
 def index():
     """Render the main page."""
@@ -39,6 +58,17 @@ def settings():
         return jsonify({"status": "success", "settings": data})
     else:
         return jsonify(load_settings())
+
+
+@app.route('/api/symptoms', methods=['GET', 'POST'])
+def symptoms():
+    """Handle symptom logging requests."""
+    if request.method == 'POST':
+        log_entry = request.json
+        save_symptom_log(log_entry)
+        return jsonify({"status": "success", "message": "Symptom log saved"})
+    else:
+        return jsonify(load_symptom_logs())
 
 
 if __name__ == '__main__':

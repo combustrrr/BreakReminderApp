@@ -43,3 +43,6 @@ instance/
 
 # Settings (optional - uncomment if you don't want to track user settings)
 # settings.json
+
+# Symptom logs (user data - should not be committed)
+symptom_logs.json
