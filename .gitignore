@@ -46,3 +46,6 @@ instance/
 
 # Symptom logs (user data - should not be committed)
 symptom_logs.json
+
+# Usage statistics (user data - should not be committed)
+usage_stats.json

@@ -197,6 +197,157 @@
             box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
         }
 
+        .view-stats-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            background-color: #00897b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-stats-btn:hover {
+            background-color: #00796b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 137, 123, 0.3);
+        }
+
+        .stats-container {
+            margin-top: 20px;
+        }
+
+        .stats-card {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stats-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            position: relative;
+            height: 250px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            margin-top: 10px;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 150px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .bar {
+            width: 20px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .bar.taken {
+            background: linear-gradient(to top, #4caf50, #81c784);
+        }
+
+        .bar.skipped {
+            background: linear-gradient(to top, #f44336, #e57373);
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .legend-color.taken {
+            background: linear-gradient(to right, #4caf50, #81c784);
+        }
+
+        .legend-color.skipped {
+            background: linear-gradient(to right, #f44336, #e57373);
+        }
+
         .symptom-form {
             margin-top: 20px;
         }
@@ -338,6 +489,44 @@
         <div id="status" class="status">Timer is stopped</div>
 
         <button class="log-symptoms-btn" onclick="openSymptomLog()">📝 Log Symptoms</button>
+        <button class="view-stats-btn" onclick="toggleStats()">📊 View Statistics</button>
+
+        <div id="statsContainer" class="stats-container" style="display: none;">
+            <div class="stats-card">
+                <h3>Summary</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalBreaks">0</div>
+                        <div class="stat-label">Total Breaks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="breaksTaken">0</div>
+                        <div class="stat-label">Breaks Taken</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="breaksSkipped">0</div>
+                        <div class="stat-label">Breaks Skipped</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h3>Weekly Trends</h3>
+                <div class="chart-container">
+                    <div class="bar-chart" id="weeklyChart"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color taken"></div>
+                        <span>Breaks Taken</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color skipped"></div>
+                        <span>Breaks Skipped</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="reminderModal" class="modal">
@@ -664,6 +853,178 @@
                 symptomModal.classList.remove('active');
             }
         });
+
+        // Statistics functions
+        let statsVisible = false;
+        let sessionStartTime = null;
+
+        function toggleStats() {
+            statsVisible = !statsVisible;
+            const statsContainer = document.getElementById('statsContainer');
+            const btn = document.querySelector('.view-stats-btn');
+            
+            if (statsVisible) {
+                statsContainer.style.display = 'block';
+                btn.textContent = '📊 Hide Statistics';
+                loadStatistics();
+            } else {
+                statsContainer.style.display = 'none';
+                btn.textContent = '📊 View Statistics';
+            }
+        }
+
+        function loadStatistics() {
+            fetch('/api/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    // Update summary
+                    document.getElementById('totalBreaks').textContent = data.totals.total_breaks;
+                    document.getElementById('breaksTaken').textContent = data.totals.breaks_taken;
+                    document.getElementById('breaksSkipped').textContent = data.totals.breaks_skipped;
+                    
+                    // Update chart
+                    renderWeeklyChart(data.weekly);
+                })
+                .catch(error => console.error('Error loading statistics:', error));
+        }
+
+        function renderWeeklyChart(weeklyData) {
+            const chartContainer = document.getElementById('weeklyChart');
+            chartContainer.innerHTML = '';
+            
+            const maxValue = Math.max(
+                ...weeklyData.breaks_taken,
+                ...weeklyData.breaks_skipped,
+                1
+            );
+            
+            weeklyData.dates.forEach((date, index) => {
+                const barGroup = document.createElement('div');
+                barGroup.className = 'bar-group';
+                
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'bar-wrapper';
+                
+                const taken = weeklyData.breaks_taken[index];
+                const skipped = weeklyData.breaks_skipped[index];
+                
+                if (taken > 0) {
+                    const takenBar = document.createElement('div');
+                    takenBar.className = 'bar taken';
+                    takenBar.style.height = `${(taken / maxValue) * 100}%`;
+                    takenBar.title = `Taken: ${taken}`;
+                    barWrapper.appendChild(takenBar);
+                }
+                
+                if (skipped > 0) {
+                    const skippedBar = document.createElement('div');
+                    skippedBar.className = 'bar skipped';
+                    skippedBar.style.height = `${(skipped / maxValue) * 100}%`;
+                    skippedBar.title = `Skipped: ${skipped}`;
+                    barWrapper.appendChild(skippedBar);
+                }
+                
+                if (taken === 0 && skipped === 0) {
+                    const emptyBar = document.createElement('div');
+                    emptyBar.className = 'bar';
+                    emptyBar.style.height = '10px';
+                    emptyBar.style.opacity = '0.3';
+                    barWrapper.appendChild(emptyBar);
+                }
+                
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                const dateObj = new Date(date);
+                label.textContent = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                
+                barGroup.appendChild(barWrapper);
+                barGroup.appendChild(label);
+                chartContainer.appendChild(barGroup);
+            });
+        }
+
+        function logBreakTaken() {
+            fetch('/api/usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'break_taken' })
+            });
+        }
+
+        function logBreakSkipped() {
+            fetch('/api/usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'break_skipped' })
+            });
+        }
+
+        function logSession(duration) {
+            fetch('/api/usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    type: 'session',
+                    duration: duration
+                })
+            });
+        }
+
+        // Track session time
+        function startSession() {
+            sessionStartTime = Date.now();
+        }
+
+        function endSession() {
+            if (sessionStartTime) {
+                const duration = Math.floor((Date.now() - sessionStartTime) / 1000); // in seconds
+                logSession(duration);
+                sessionStartTime = null;
+            }
+        }
+
+        // Update timer functions to track usage
+        const originalStartTimer = startTimer;
+        const originalStopTimer = stopTimer;
+
+        function startTimer() {
+            originalStartTimer();
+            startSession();
+        }
+
+        function stopTimer() {
+            originalStopTimer();
+            endSession();
+        }
+
+        // Modified showReminder to track breaks
+        const originalShowReminder = showReminder;
+        
+        function showReminder() {
+            modal.classList.add('active');
+            playBeep();
+            
+            logBreakTaken(); // Log that a break was shown
+            
+            let count = 20;
+            countdownElement.textContent = count;
+            
+            countdownInterval = setInterval(() => {
+                count--;
+                countdownElement.textContent = count;
+                
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    modal.classList.remove('active');
+                    
+                    if (isRunning && !isPaused) {
+                        const interval = parseInt(intervalInput.value) * 60 * 1000;
+                        nextBreakTime = Date.now() + interval;
+                        reminderTimeout = setTimeout(showReminder, interval);
+                    }
+                }
+            }, 1000);
+        }
     </script>
 </body>
 </html>
