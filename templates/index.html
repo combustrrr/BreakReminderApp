@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Break Reminder - Cross Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-start {
+            background-color: #4caf50;
+        }
+
+        .btn-stop {
+            background-color: #f44336;
+        }
+
+        .btn-pause {
+            background-color: #ff9800;
+        }
+
+        .btn-resume {
+            background-color: #2196f3;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .status.running {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.paused {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .modal-content p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2196f3;
+            margin: 20px 0;
+        }
+
+        /* Symptom logging styles */
+        .log-symptoms-btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background-color: #9c27b0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .log-symptoms-btn:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
+        }
+
+        .view-stats-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            background-color: #00897b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-stats-btn:hover {
+            background-color: #00796b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 137, 123, 0.3);
+        }
+
+        .stats-container {
+            margin-top: 20px;
+        }
+
+        .stats-card {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stats-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            position: relative;
+            height: 250px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            margin-top: 10px;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 150px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .bar {
+            width: 20px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .bar.taken {
+            background: linear-gradient(to top, #4caf50, #81c784);
+        }
+
+        .bar.skipped {
+            background: linear-gradient(to top, #f44336, #e57373);
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .legend-color.taken {
+            background: linear-gradient(to right, #4caf50, #81c784);
+        }
+
+        .legend-color.skipped {
+            background: linear-gradient(to right, #f44336, #e57373);
+        }
+
+        .symptom-form {
+            margin-top: 20px;
+        }
+
+        .symptom-item {
+            margin-bottom: 20px;
+        }
+
+        .symptom-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .symptom-slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .symptom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .symptom-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            min-width: 80px;
+            text-align: center;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .submit-log-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-log-btn:hover {
+            background-color: #45a049;
+        }
+
+        .log-success {
+            text-align: center;
+            padding: 15px;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            button {
+                min-width: 80px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👁️ Break Reminder</h1>
+        <p style="text-align: center; color: #667eea; font-weight: 500; margin-bottom: 20px;">
+            Combat Computer Vision Syndrome with the 20-20-20 Rule
+        </p>
+        
+        <div class="input-group">
+            <label for="interval">Reminder Interval (minutes):</label>
+            <input type="number" id="interval" value="{{ interval }}" min="1" max="120">
+        </div>
+
+        <div class="button-group">
+            <button id="startBtn" class="btn-start" onclick="startTimer()">Start</button>
+            <button id="stopBtn" class="btn-stop" onclick="stopTimer()" disabled>Stop</button>
+            <button id="pauseBtn" class="btn-pause" onclick="pauseTimer()" disabled>Pause</button>
+            <button id="resumeBtn" class="btn-resume" onclick="resumeTimer()" disabled>Resume</button>
+        </div>
+
+        <div id="status" class="status">Timer is stopped</div>
+
+        <button class="log-symptoms-btn" onclick="openSymptomLog()">📝 Log Symptoms</button>
+        <button class="view-stats-btn" onclick="toggleStats()">📊 View Statistics</button>
+
+        <div id="statsContainer" class="stats-container" style="display: none;">
+            <div class="stats-card">
+                <h3>Summary</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalBreaks">0</div>
+                        <div class="stat-label">Total Breaks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="breaksTaken">0</div>
+                        <div class="stat-label">Breaks Taken</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="breaksSkipped">0</div>
+                        <div class="stat-label">Breaks Skipped</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h3>Weekly Trends</h3>
+                <div class="chart-container">
+                    <div class="bar-chart" id="weeklyChart"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color taken"></div>
+                        <span>Breaks Taken</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color skipped"></div>
+                        <span>Breaks Skipped</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reminderModal" class="modal">
+        <div class="modal-content">
+            <h2>⏰ Time for a Break!</h2>
+            <p><strong>20-20-20 Rule:</strong><br>
+            Look at something 20 feet away<br>for 20 seconds!</p>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                This helps reduce eye strain from screen time
+            </p>
+            <div id="countdown" class="countdown">20</div>
+            <p>seconds remaining</p>
+        </div>
+    </div>
+
+    <div id="symptomModal" class="modal">
+        <div class="modal-content">
+            <h2>📝 Log Your Symptoms</h2>
+            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                Track your eye health symptoms to understand patterns
+            </p>
+
+            <div class="symptom-form">
+                <div class="symptom-item">
+                    <label>Eye Strain (0 = None, 5 = Severe)</label>
+                    <div class="slider-container">
+                        <input type="range" id="eyeStrainSlider" class="symptom-slider" min="0" max="5" value="0" oninput="updateSliderValue('eyeStrain', this.value)">
+                        <span id="eyeStrainValue" class="slider-value">None (0)</span>
+                    </div>
+                </div>
+
+                <div class="symptom-item">
+                    <label>Dry Eyes (0 = None, 5 = Severe)</label>
+                    <div class="slider-container">
+                        <input type="range" id="dryEyesSlider" class="symptom-slider" min="0" max="5" value="0" oninput="updateSliderValue('dryEyes', this.value)">
+                        <span id="dryEyesValue" class="slider-value">None (0)</span>
+                    </div>
+                </div>
+
+                <div class="symptom-item">
+                    <label>Headache (0 = None, 5 = Severe)</label>
+                    <div class="slider-container">
+                        <input type="range" id="headacheSlider" class="symptom-slider" min="0" max="5" value="0" oninput="updateSliderValue('headache', this.value)">
+                        <span id="headacheValue" class="slider-value">None (0)</span>
+                    </div>
+                </div>
+
+                <div class="symptom-item">
+                    <label>Additional Symptoms</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="blurredVision" value="blurred">
+                            <label for="blurredVision">Blurred Vision</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="neckPain" value="neck">
+                            <label for="neckPain">Neck Pain</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="shoulderPain" value="shoulder">
+                            <label for="shoulderPain">Shoulder Pain</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="submit-log-btn" onclick="submitSymptomLog()">Submit Log</button>
+                <div id="logSuccess" class="log-success" style="display: none;">
+                    ✓ Symptoms logged successfully!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval = null;
+        let countdownInterval = null;
+        let reminderTimeout = null;
+        let isRunning = false;
+        let isPaused = false;
+        let nextBreakTime = null;
+
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const status = document.getElementById('status');
+        const intervalInput = document.getElementById('interval');
+        const modal = document.getElementById('reminderModal');
+        const countdownElement = document.getElementById('countdown');
+
+        // Audio context for cross-platform sound
+        let audioContext = null;
+
+        function playBeep() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 1000;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio not supported:', e);
+            }
+        }
+
+        function startTimer() {
+            const interval = parseInt(intervalInput.value) * 60 * 1000; // Convert to milliseconds
+            
+            isRunning = true;
+            isPaused = false;
+            nextBreakTime = Date.now() + interval;
+            
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            pauseBtn.disabled = false;
+            resumeBtn.disabled = true;
+            
+            updateStatus();
+            saveSettings();
+            
+            reminderTimeout = setTimeout(showReminder, interval);
+            timerInterval = setInterval(updateStatus, 1000);
+        }
+
+        function stopTimer() {
+            isRunning = false;
+            isPaused = false;
+            
+            if (reminderTimeout) clearTimeout(reminderTimeout);
+            if (timerInterval) clearInterval(timerInterval);
+            
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            pauseBtn.disabled = true;
+            resumeBtn.disabled = true;
+            
+            status.textContent = 'Timer is stopped';
+            status.className = 'status';
+            
+            saveSettings();
+        }
+
+        function pauseTimer() {
+            isPaused = true;
+            
+            if (reminderTimeout) clearTimeout(reminderTimeout);
+            if (timerInterval) clearInterval(timerInterval);
+            
+            pauseBtn.disabled = true;
+            resumeBtn.disabled = false;
+            
+            status.textContent = 'Timer is paused';
+            status.className = 'status paused';
+        }
+
+        function resumeTimer() {
+            const interval = parseInt(intervalInput.value) * 60 * 1000;
+            
+            isPaused = false;
+            nextBreakTime = Date.now() + interval;
+            
+            pauseBtn.disabled = false;
+            resumeBtn.disabled = true;
+            
+            updateStatus();
+            
+            reminderTimeout = setTimeout(showReminder, interval);
+            timerInterval = setInterval(updateStatus, 1000);
+        }
+
+        function updateStatus() {
+            if (!isRunning || isPaused) return;
+            
+            const remaining = Math.max(0, nextBreakTime - Date.now());
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            
+            status.textContent = `Next break in: ${minutes}m ${seconds}s`;
+            status.className = 'status running';
+        }
+
+        function showReminder() {
+            modal.classList.add('active');
+            playBeep();
+            
+            let count = 20;
+            countdownElement.textContent = count;
+            
+            countdownInterval = setInterval(() => {
+                count--;
+                countdownElement.textContent = count;
+                
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    modal.classList.remove('active');
+                    
+                    if (isRunning && !isPaused) {
+                        const interval = parseInt(intervalInput.value) * 60 * 1000;
+                        nextBreakTime = Date.now() + interval;
+                        reminderTimeout = setTimeout(showReminder, interval);
+                    }
+                }
+            }, 1000);
+        }
+
+        function saveSettings() {
+            const settings = {
+                interval: intervalInput.value
+            };
+            
+            fetch('/api/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            });
+        }
+
+        // Save settings when interval changes
+        intervalInput.addEventListener('change', saveSettings);
+
+        // Close modal if clicked outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                if (countdownInterval) clearInterval(countdownInterval);
+                modal.classList.remove('active');
+                
+                if (isRunning && !isPaused) {
+                    const interval = parseInt(intervalInput.value) * 60 * 1000;
+                    nextBreakTime = Date.now() + interval;
+                    reminderTimeout = setTimeout(showReminder, interval);
+                }
+            }
+        });
+
+        // Symptom logging functions
+        const symptomModal = document.getElementById('symptomModal');
+        const severityLabels = ['None (0)', 'Mild (1)', 'Slight (2)', 'Moderate (3)', 'Noticeable (4)', 'Severe (5)'];
+
+        function openSymptomLog() {
+            symptomModal.classList.add('active');
+        }
+
+        function updateSliderValue(symptomType, value) {
+            const displayValue = severityLabels[parseInt(value)];
+            document.getElementById(symptomType + 'Value').textContent = displayValue;
+        }
+
+        function submitSymptomLog() {
+            const logData = {
+                timestamp: new Date().toISOString(),
+                eyeStrain: parseInt(document.getElementById('eyeStrainSlider').value),
+                dryEyes: parseInt(document.getElementById('dryEyesSlider').value),
+                headache: parseInt(document.getElementById('headacheSlider').value),
+                additionalSymptoms: []
+            };
+
+            // Collect additional symptoms
+            if (document.getElementById('blurredVision').checked) {
+                logData.additionalSymptoms.push('Blurred Vision');
+            }
+            if (document.getElementById('neckPain').checked) {
+                logData.additionalSymptoms.push('Neck Pain');
+            }
+            if (document.getElementById('shoulderPain').checked) {
+                logData.additionalSymptoms.push('Shoulder Pain');
+            }
+
+            // Save to backend
+            fetch('/api/symptoms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(logData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show success message
+                const successMsg = document.getElementById('logSuccess');
+                successMsg.style.display = 'block';
+                
+                // Reset form after 2 seconds and close modal
+                setTimeout(() => {
+                    resetSymptomForm();
+                    successMsg.style.display = 'none';
+                    symptomModal.classList.remove('active');
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error logging symptoms:', error);
+            });
+        }
+
+        function resetSymptomForm() {
+            document.getElementById('eyeStrainSlider').value = 0;
+            document.getElementById('dryEyesSlider').value = 0;
+            document.getElementById('headacheSlider').value = 0;
+            updateSliderValue('eyeStrain', 0);
+            updateSliderValue('dryEyes', 0);
+            updateSliderValue('headache', 0);
+            document.getElementById('blurredVision').checked = false;
+            document.getElementById('neckPain').checked = false;
+            document.getElementById('shoulderPain').checked = false;
+        }
+
+        // Close symptom modal if clicked outside
+        symptomModal.addEventListener('click', (e) => {
+            if (e.target === symptomModal) {
+                symptomModal.classList.remove('active');
+            }
+        });
+
+        // Statistics functions
+        let statsVisible = false;
+        let sessionStartTime = null;
+
+        function toggleStats() {
+            statsVisible = !statsVisible;
+            const statsContainer = document.getElementById('statsContainer');
+            const btn = document.querySelector('.view-stats-btn');
+            
+            if (statsVisible) {
+                statsContainer.style.display = 'block';
+                btn.textContent = '📊 Hide Statistics';
+                loadStatistics();
+            } else {
+                statsContainer.style.display = 'none';
+                btn.textContent = '📊 View Statistics';
+            }
+        }
+
+        function loadStatistics() {
+            fetch('/api/statistics')
+                .then(response => response.json())
+                .then(data => {
+                    // Update summary
+                    document.getElementById('totalBreaks').textContent = data.totals.total_breaks;
+                    document.getElementById('breaksTaken').textContent = data.totals.breaks_taken;
+                    document.getElementById('breaksSkipped').textContent = data.totals.breaks_skipped;
+                    
+                    // Update chart
+                    renderWeeklyChart(data.weekly);
+                })
+                .catch(error => console.error('Error loading statistics:', error));
+        }
+
+        function renderWeeklyChart(weeklyData) {
+            const chartContainer = document.getElementById('weeklyChart');
+            chartContainer.innerHTML = '';
+            
+            const maxValue = Math.max(
+                ...weeklyData.breaks_taken,
+                ...weeklyData.breaks_skipped,
+                1
+            );
+            
+            weeklyData.dates.forEach((date, index) => {
+                const barGroup = document.createElement('div');
+                barGroup.className = 'bar-group';
+                
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'bar-wrapper';
+                
+                const taken = weeklyData.breaks_taken[index];
+                const skipped = weeklyData.breaks_skipped[index];
+                
+                if (taken > 0) {
+                    const takenBar = document.createElement('div');
+                    takenBar.className = 'bar taken';
+                    takenBar.style.height = `${(taken / maxValue) * 100}%`;
+                    takenBar.title = `Taken: ${taken}`;
+                    barWrapper.appendChild(takenBar);
+                }
+                
+                if (skipped > 0) {
+                    const skippedBar = document.createElement('div');
+                    skippedBar.className = 'bar skipped';
+                    skippedBar.style.height = `${(skipped / maxValue) * 100}%`;
+                    skippedBar.title = `Skipped: ${skipped}`;
+                    barWrapper.appendChild(skippedBar);
+                }
+                
+                if (taken === 0 && skipped === 0) {
+                    const emptyBar = document.createElement('div');
+                    emptyBar.className = 'bar';
+                    emptyBar.style.height = '10px';
+                    emptyBar.style.opacity = '0.3';
+                    barWrapper.appendChild(emptyBar);
+                }
+                
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                const dateObj = new Date(date);
+                label.textContent = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                
+                barGroup.appendChild(barWrapper);
+                barGroup.appendChild(label);
+                chartContainer.appendChild(barGroup);
+            });
+        }
+
+        function logBreakTaken() {
+            fetch('/api/usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'break_taken' })
+            });
+        }
+
+        function logBreakSkipped() {
+            fetch('/api/usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'break_skipped' })
+            });
+        }
+
+        function logSession(duration) {
+            fetch('/api/usage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    type: 'session',
+                    duration: duration
+                })
+            });
+        }
+
+        // Track session time
+        function startSession() {
+            sessionStartTime = Date.now();
+        }
+
+        function endSession() {
+            if (sessionStartTime) {
+                const duration = Math.floor((Date.now() - sessionStartTime) / 1000); // in seconds
+                logSession(duration);
+                sessionStartTime = null;
+            }
+        }
+
+        // Update timer functions to track usage
+        const originalStartTimer = startTimer;
+        const originalStopTimer = stopTimer;
+
+        function startTimer() {
+            originalStartTimer();
+            startSession();
+        }
+
+        function stopTimer() {
+            originalStopTimer();
+            endSession();
+        }
+
+        // Modified showReminder to track breaks
+        const originalShowReminder = showReminder;
+        
+        function showReminder() {
+            modal.classList.add('active');
+            playBeep();
+            
+            logBreakTaken(); // Log that a break was shown
+            
+            let count = 20;
+            countdownElement.textContent = count;
+            
+            countdownInterval = setInterval(() => {
+                count--;
+                countdownElement.textContent = count;
+                
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    modal.classList.remove('active');
+                    
+                    if (isRunning && !isPaused) {
+                        const interval = parseInt(intervalInput.value) * 60 * 1000;
+                        nextBreakTime = Date.now() + interval;
+                        reminderTimeout = setTimeout(showReminder, interval);
+                    }
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
